@@ -22,11 +22,13 @@ support Raspberry-Pi, because RetroPie already does a great job of doing just th
 
 You build Emubox-CD images on a Debian Stretch system like this:
 
-\> git clone https://github.com/ashwinm76/Emubox-CD.git
-
-\> cd Emubox-CD
-
-\> build-simple-cdd -p emubox --logfile simple-cdd.log
+- git clone https://github.com/ashwinm76/Emubox-CD.git
+- cd Emubox-CD
+- Create the emulationstation and emulationstation-data Debian packages as detailed in
+  https://github.com/ashwinm76/EmulationStation
+- Create the emubox Debian package as detailed in https://github.com/ashwinm76/Emubox
+- Copy the created packages above to the local_packages directory
+- build-simple-cdd -p emubox --logfile simple-cdd.log
 
 An ISO image will be created in the images directory. Burn the image to a CD or
 a USB flash drive, pop it into an old machine, boot the machine from it, and 
