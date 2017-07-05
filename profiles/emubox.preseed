@@ -1,0 +1,69 @@
+###### Account setup.
+
+# Skip creation of a root account (normal user account will be able to
+# use sudo).
+d-i passwd/root-login boolean false
+
+# Preseed the user's name and login.
+d-i passwd/user-fullname string Emubox User
+d-i passwd/username string emubox
+# And their password, but use caution!
+d-i passwd/user-password password emubox
+d-i passwd/user-password-again password emubox
+
+#### Network configuration.
+
+# Note that any hostname and domain names assigned from dhcp take
+# precidence over values set here. However, setting the values still
+# prevents the questions from being shown even if values come from dhcp.
+d-i netcfg/get_hostname string Emubox
+
+# set the domain to empty:
+d-i netcfg/get_domain string
+
+# If non-free firmware is needed for the network or other hardware, you can
+# configure the installer to always try to load it, without prompting. Or
+# change to false to disable asking.
+d-i hw-detect/load_firmware boolean true
+
+###### Apt setup.
+
+# only scan the first CD by default
+base-config apt-setup/cd/another boolean false
+
+# Select the US mirror by default
+choose-mirror-bin mirror/http/mirror select ftp.us.debian.org
+
+### Partitioning.
+
+# In addition, you'll need to specify the method to use.
+# The presently available methods are: "regular", "lvm" and "crypto"
+d-i partman-auto/method string regular
+
+# You can choose one of the three predefined partitioning recipes:
+# - atomic: all files in one partition
+# - home:   separate /home partition
+# - multi:  separate /home, /var, and /tmp partitions
+d-i partman-auto/choose_recipe select atomic
+
+# This makes partman automatically partition without confirmation, provided
+# that you told it what to do using one of the methods above.
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+### skip some annoying installation status notes
+
+# Avoid that last message about the install being complete.
+d-i finish-install/reboot_in_progress note
+# Avoid the introductory message.
+
+# Some versions of the installer can report back on what software you have
+# installed, and what software you use. The default is not to report back,
+# but sending reports helps the project determine what software is most
+# popular and include it on CDs.
+popularity-contest popularity-contest/participate boolean false
+
+# Enable nodm
+d-i nodm/enabled boolean true 

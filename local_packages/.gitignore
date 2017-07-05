@@ -1,0 +1,3 @@
+# Ignore the debian packages placed here during build.
+*.deb
+

@@ -1,0 +1,58 @@
+#!/bin/sh
+
+#### emubox user customizations
+
+# Make the emubox user's password empty
+passwd -d emubox
+
+# Openbox starts up when emubox logs in
+echo "openbox-session" > ~emubox/.xsession
+chown emubox:emubox ~emubox/.xsession
+
+# Openbox autostarts
+mkdir -p ~emubox/.config/openbox
+echo "xterm&" > ~emubox/.config/openbox/autostart
+#echo "emulationstation --no-splash&" > ~emubox/.config/openbox/autostart
+chown -R emubox:emubox ~emubox/.config
+
+# Enable emubox to log in automatically
+sed -i -e 's/NODM_ENABLED.*/NODM_ENABLED=true/g' /etc/default/nodm
+sed -i -e 's/NODM_USER.*/NODM_USER=emubox/g' /etc/default/nodm
+
+# emubox can sudo without a password
+echo "emubox ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/emubox
+chmod 0440 /etc/sudoers.d/emubox
+
+# Create ~/.emulationstation from a copy in /usr/share/emubox (installed by emubox)
+mkdir -p ~emubox/.emulationstation
+cp /usr/share/emubox/emulationstation/*.cfg ~emubox/.emulationstation/
+chown -R emubox:emubox ~emubox/.emulationstation
+
+# Create ~/.config/retroarch (including per system cfgs, gb palette) from a copy in /usr/share/emubox (installed by emubox)
+mkdir -p ~emubox/.config/retroarch
+cp /usr/share/emubox/retroarch/*.cfg ~emubox/.config/retroarch/
+chown -R emubox:emubox ~emubox/.config
+mkdir -p ~emubox/roms
+chown -R emubox:emubox ~emubox/roms
+cp -r /usr/share/emubox/retroarch/system ~emubox/
+chown -R emubox:emubox ~emubox/system
+
+#### System customizations
+
+# Silence the fsck output
+mkdir -p /etc/systemd/system/systemd-fsck-root.service.d
+cat > /etc/systemd/system/systemd-fsck-root.service.d/quiet.conf << "EOF"
+[Service]
+StandardOutput=journal
+EOF
+
+# Set up the video modesetting drivers for plymouth
+cat >> /etc/initramfs-tools/modules << "EOF"
+i915 modeset=1
+nouveau modeset=1
+radeon modeset=1
+EOF
+
+# Set the plymouth default theme
+plymouth-set-default-theme -R spinner
+
